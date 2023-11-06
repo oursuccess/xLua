@@ -121,6 +121,13 @@ if (NOT USING_LUAJIT)
     list (APPEND XLUA_CORE memory_leak_checker.c)
 endif ( )
 
+#begin lua-protobuf
+set (PROTOBUF_SRC lua-protobuf/pb.c)
+set_property( SOURCE ${PROTOBUF_SRC} APPEND PROPERTY COMPILE_DEFINITIONS LUA_LIB)
+list(APPEND THIRDPART_INC lua-protobuf)
+set(THIRDPART_SRC ${THIRDPART_SRC} ${PROTOBUF_SRC})
+#end lua-protobuf
+
 macro(source_group_by_dir proj_dir source_files)
     if(MSVC OR APPLE)
         get_filename_component(sgbd_cur_dir ${proj_dir} ABSOLUTE)
