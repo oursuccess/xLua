@@ -128,6 +128,26 @@ list(APPEND THIRDPART_INC lua-protobuf)
 set(THIRDPART_SRC ${THIRDPART_SRC} ${PROTOBUF_SRC})
 #end lua-protobuf
 
+#begin lua-cjson
+set (CJSON_SRC 
+    lua-cjson/strbuf.c
+    lua-cjson/lua_cjson.c
+    lua-cjson/fpconv.c
+)
+if(WIN32)
+    # Windows sprintf()/strtod() handle NaN/inf differently. Not supported.
+    add_definitions(-DDISABLE_INVALID_NUMBERS)
+endif()
+set_property(
+    SOURCE ${CJSON_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC  lua-rapidjson)
+set (THIRDPART_SRC ${THIRDPART_SRC} ${CJSON_SRC})
+#end lua-cjson
+
 macro(source_group_by_dir proj_dir source_files)
     if(MSVC OR APPLE)
         get_filename_component(sgbd_cur_dir ${proj_dir} ABSOLUTE)
