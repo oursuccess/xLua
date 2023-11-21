@@ -49,7 +49,7 @@
 #include "fpconv.h"
 
 #ifndef CJSON_MODNAME
-#define CJSON_MODNAME   "cjson"
+#define CJSON_MODNAME   "json"
 #endif
 
 #ifndef CJSON_VERSION
@@ -1598,7 +1598,7 @@ static int lua_cjson_safe_new(lua_State *l)
     return 1;
 }
 
-int luaopen_cjson(lua_State *l)
+LUALIB_API int luaopen_cjson(lua_State *l)
 {
     lua_cjson_new(l);
 

@@ -143,8 +143,9 @@ set_property(
     APPEND
     PROPERTY COMPILE_DEFINITIONS
     LUA_LIB
+    ENABLE_CJSON_GLOBAL
 )
-list(APPEND THIRDPART_INC  lua-rapidjson)
+list(APPEND THIRDPART_INC lua-cjson)
 set (THIRDPART_SRC ${THIRDPART_SRC} ${CJSON_SRC})
 #end lua-cjson
 
