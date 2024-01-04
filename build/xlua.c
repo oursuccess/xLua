@@ -537,52 +537,55 @@ LUA_API int gen_obj_newindexer(lua_State *L) {
 	return 0;
 }
 
-//upvalue --- [1]:getters, [2]:feilds, [3]:base, [4]:indexfuncs, [5]:baseindex
+//upvalue --- [1]:getters(static_getters), [2]:feilds(class), [3]:base, [4]:indexfuncs(REGISTRY.LuaClassIndexs.type), [5]:baseindex(nil)
 //param   --- [1]: obj, [2]: key
 LUA_API int cls_indexer(lua_State *L) {	
 	if (!lua_isnil(L, lua_upvalueindex(1))) {
-		lua_pushvalue(L, 2);
-		lua_gettable(L, lua_upvalueindex(1));
+		//若有getters表，先从getters表中查找
+		lua_pushvalue(L, 2);	//推入key. 栈: ..., obj, key, key
+		lua_gettable(L, lua_upvalueindex(1));	//查找key. 栈: ..., obj, key, getters[key]
 		if (!lua_isnil(L, -1)) {//has getter
-			lua_call(L, 0, 1);
-			return 1;
+			lua_call(L, 0, 1);	//调用getters[key](obj). args数量为0(因是property), result数量为1. 栈: ..., obj, key, getters[key](obj)
+			return 1;	//表示已经找到
 		}
-		lua_pop(L, 1);
+		lua_pop(L, 1);	//栈: ..., obj, key
 	}
 	
 	if (!lua_isnil(L, lua_upvalueindex(2))) {
-		lua_pushvalue(L, 2);
-		lua_rawget(L, lua_upvalueindex(2));
-		if (!lua_isnil(L, -1)) {//has feild
+		//若class中直接声明了feilds，则直接索引class
+		lua_pushvalue(L, 2);	//推入key. 栈: ..., obj, key, key
+		lua_rawget(L, lua_upvalueindex(2));	//查找key. 栈: ..., obj, key, class[key]
+		if (!lua_isnil(L, -1)) {//has field
 			return 1;
 		}
-		lua_pop(L, 1);
+		lua_pop(L, 1);	//栈: ..., obj, key
 	}
 	
 	if (!lua_isnil(L, lua_upvalueindex(3))) {
-		lua_pushvalue(L, lua_upvalueindex(3));
-		while(!lua_isnil(L, -1)) {
-			lua_pushvalue(L, -1);
-			lua_gettable(L, lua_upvalueindex(4));
+		//若有base，从base中查找
+		lua_pushvalue(L, lua_upvalueindex(3));	//推入base. 栈: ..., obj, key, base
+		while(!lua_isnil(L, -1)) {	//递归查找base
+			lua_pushvalue(L, -1);	//将base推入栈: ..., obj, key, base, base | base.BaseType
+			lua_gettable(L, lua_upvalueindex(4));	//栈: ..., obj, key, base, indexfuncs[base | base.BaseType]{function 或 nil}
 			if (!lua_isnil(L, -1)) // found
 			{
-				lua_replace(L, lua_upvalueindex(5)); //baseindex = indexfuncs[base]
-				lua_pop(L, 1);
+				lua_replace(L, lua_upvalueindex(5)); //baseindex = indexfuncs[base]. 栈: ..., obj, key, base | base.BaseType
+				lua_pop(L, 1);	//栈: ..., obj, key
 				break;
 			}
-			lua_pop(L, 1);
-			lua_getfield(L, -1, "BaseType");
-			lua_remove(L, -2);
+			lua_pop(L, 1);	//栈: ..., obj, key, base, base | base.BaseType
+			lua_getfield(L, -1, "BaseType");	//栈: ..., obj, key, base, base | base.BaseType, base.BaseType | base.BaseType.BaseType | nil
+			lua_remove(L, -2);	//栈: ..., obj, key, base, base.BaseType | base.BaseType.BaseType | nil
 		}
-		lua_pushnil(L);
+		lua_pushnil(L);	//栈: ..., obj, key, base, nil
 		lua_replace(L, lua_upvalueindex(3));//base = nil
 	}
 	
 	if (!lua_isnil(L, lua_upvalueindex(5))) {
-		lua_settop(L, 2);
-		lua_pushvalue(L, lua_upvalueindex(5));
-		lua_insert(L, 1);
-		lua_call(L, 2, 1);
+		lua_settop(L, 2);	//仅保留obj和key
+		lua_pushvalue(L, lua_upvalueindex(5));	//栈: ..., obj, key, baseindex
+		lua_insert(L, 1);	//栈: ..., baseindex, obj, key
+		lua_call(L, 2, 1); //baseindex(obj, key)	//栈: ..., result
 		return 1;
 	} else {
 		lua_pushnil(L);
