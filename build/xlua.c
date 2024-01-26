@@ -391,7 +391,7 @@ void print_value(lua_State *L,  char *str, int idx) {
 LUA_API int obj_indexer(lua_State *L) {	
 	if (!lua_isnil(L, lua_upvalueindex(1))) {
 		lua_pushvalue(L, 2);
-		lua_gettable(L, lua_upvalueindex(1));
+		lua_gettable(L, lua_upvalueindex(1));	//Lua: methods[key]
 		if (!lua_isnil(L, -1)) {//has method
 			return 1;
 		}
@@ -400,21 +400,21 @@ LUA_API int obj_indexer(lua_State *L) {
 	
 	if (!lua_isnil(L, lua_upvalueindex(2))) {
 		lua_pushvalue(L, 2);
-		lua_gettable(L, lua_upvalueindex(2));
+		lua_gettable(L, lua_upvalueindex(2));	//Lua: getters[key]
 		if (!lua_isnil(L, -1)) {//has getter
 			lua_pushvalue(L, 1);
-			lua_call(L, 1, 1);
+			lua_call(L, 1, 1);	//Lua: getters[key](obj)
 			return 1;
 		}
 		lua_pop(L, 1);
 	}
 	
 	
-	if (!lua_isnil(L, lua_upvalueindex(6)) && lua_type(L, 2) == LUA_TNUMBER) {
+	if (!lua_isnil(L, lua_upvalueindex(6)) && lua_type(L, 2) == LUA_TNUMBER) {	//仅支持数组
 		lua_pushvalue(L, lua_upvalueindex(6));
 		lua_pushvalue(L, 1);
 		lua_pushvalue(L, 2);
-		lua_call(L, 2, 1);
+		lua_call(L, 2, 1);	//Lua: arrayIndexer(obj, key)
 		return 1;
 	}
 	
@@ -422,7 +422,7 @@ LUA_API int obj_indexer(lua_State *L) {
 		lua_pushvalue(L, lua_upvalueindex(3));
 		lua_pushvalue(L, 1);
 		lua_pushvalue(L, 2);
-		lua_call(L, 2, 2);
+		lua_call(L, 2, 2);	//Lua: csindexer(obj, key). 任意类型Key均可
 		if (lua_toboolean(L, -2)) {
 			return 1;
 		}
@@ -433,7 +433,7 @@ LUA_API int obj_indexer(lua_State *L) {
 		lua_pushvalue(L, lua_upvalueindex(4));
 		while(!lua_isnil(L, -1)) {
 			lua_pushvalue(L, -1);
-			lua_gettable(L, lua_upvalueindex(5));
+			lua_gettable(L, lua_upvalueindex(5));	//Lua: Registry.LuaIndexs[type]
 			if (!lua_isnil(L, -1)) // found
 			{
 				lua_replace(L, lua_upvalueindex(7)); //baseindex = indexfuncs[base]
