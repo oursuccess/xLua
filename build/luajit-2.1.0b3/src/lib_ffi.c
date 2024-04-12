@@ -1,6 +1,6 @@
 /*
 ** FFI library.
-** Copyright (C) 2005-2023 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #define lib_ffi_c
@@ -573,7 +573,6 @@ LJLIB_CF(ffi_typeinfo)
       setintV(lj_tab_setstr(L, t, lj_str_newlit(L, "sib")), (int32_t)ct->sib);
     if (gcref(ct->name)) {
       GCstr *s = gco2str(gcref(ct->name));
-      if (isdead(G(L), obj2gco(s))) flipwhite(obj2gco(s));
       setstrV(L, lj_tab_setstr(L, t, lj_str_newlit(L, "name")), s);
     }
     lj_gc_check(L);
@@ -639,7 +638,7 @@ LJLIB_CF(ffi_alignof)	LJLIB_REC(ffi_xof FF_ffi_alignof)
   CTState *cts = ctype_cts(L);
   CTypeID id = ffi_checkctype(L, cts, NULL);
   CTSize sz = 0;
-  CTInfo info = lj_ctype_info_raw(cts, id, &sz);
+  CTInfo info = lj_ctype_info(cts, id, &sz);
   setintV(L->top-1, 1 << ctype_align(info));
   return 1;
 }
@@ -721,49 +720,46 @@ LJLIB_CF(ffi_fill)	LJLIB_REC(.)
   return 0;
 }
 
+#define H_(le, be)	LJ_ENDIAN_SELECT(0x##le, 0x##be)
+
 /* Test ABI string. */
 LJLIB_CF(ffi_abi)	LJLIB_REC(.)
 {
   GCstr *s = lj_lib_checkstr(L, 1);
-  int b = lj_cparse_case(s,
+  int b = 0;
+  switch (s->hash) {
 #if LJ_64
-    "\00564bit"
+  case H_(849858eb,ad35fd06): b = 1; break;  /* 64bit */
 #else
-    "\00532bit"
+  case H_(662d3c79,d0e22477): b = 1; break;  /* 32bit */
 #endif
 #if LJ_ARCH_HASFPU
-    "\003fpu"
+  case H_(e33ee463,e33ee463): b = 1; break;  /* fpu */
 #endif
 #if LJ_ABI_SOFTFP
-    "\006softfp"
+  case H_(61211a23,c2e8c81c): b = 1; break;  /* softfp */
 #else
-    "\006hardfp"
+  case H_(539417a8,8ce0812f): b = 1; break;  /* hardfp */
 #endif
 #if LJ_ABI_EABI
-    "\004eabi"
+  case H_(2182df8f,f2ed1152): b = 1; break;  /* eabi */
 #endif
 #if LJ_ABI_WIN
-    "\003win"
+  case H_(4ab624a8,4ab624a8): b = 1; break;  /* win */
 #endif
-#if LJ_ABI_PAUTH
-    "\005pauth"
-#endif
-#if LJ_TARGET_UWP
-    "\003uwp"
-#endif
-#if LJ_LE
-    "\002le"
-#else
-    "\002be"
-#endif
+  case H_(3af93066,1f001464): b = 1; break;  /* le/be */
 #if LJ_GC64
-    "\004gc64"
+  case H_(9e89d2c9,13c83c92): b = 1; break;  /* gc64 */
 #endif
-  ) >= 0;
+  default:
+    break;
+  }
   setboolV(L->top-1, b);
   setboolV(&G(L)->tmptv2, b);  /* Remember for trace recorder. */
   return 1;
 }
+
+#undef H_
 
 LJLIB_PUSH(top-8) LJLIB_SET(!)  /* Store reference to miscmap table. */
 
@@ -773,13 +769,13 @@ LJLIB_CF(ffi_metatype)
   CTypeID id = ffi_checkctype(L, cts, NULL);
   GCtab *mt = lj_lib_checktab(L, 2);
   GCtab *t = cts->miscmap;
-  CType *ct = ctype_raw(cts, id);
+  CType *ct = ctype_get(cts, id);  /* Only allow raw types. */
   TValue *tv;
   GCcdata *cd;
   if (!(ctype_isstruct(ct->info) || ctype_iscomplex(ct->info) ||
 	ctype_isvector(ct->info)))
     lj_err_arg(L, 1, LJ_ERR_FFI_INVTYPE);
-  tv = lj_tab_setinth(L, t, -(int32_t)ctype_typeid(cts, ct));
+  tv = lj_tab_setinth(L, t, -(int32_t)id);
   if (!tvisnil(tv))
     lj_err_caller(L, LJ_ERR_PROTMT);
   settabV(L, tv, mt);
