@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 -- LuaJIT module to save/list bytecode.
 --
--- Copyright (C) 2005-2021 Mike Pall. All rights reserved.
+-- Copyright (C) 2005-2023 Mike Pall. All rights reserved.
 -- Released under the MIT license. See Copyright Notice in luajit.h
 ----------------------------------------------------------------------------
 --
@@ -11,7 +11,7 @@
 ------------------------------------------------------------------------------
 
 local jit = require("jit")
-assert(jit.version_num == 20100, "LuaJIT core/library version mismatch")
+assert(jit.version_num == 20199, "LuaJIT core/library version mismatch")
 local bit = require("bit")
 
 -- Symbol name prefix for LuaJIT bytecode.
@@ -29,15 +29,19 @@ Save LuaJIT bytecode: luajit -b[options] input output
   -l        Only list bytecode.
   -s        Strip debug info (default).
   -g        Keep debug info.
+  -W        Generate 32 bit (non-GC64) bytecode.
+  -X        Generate 64 bit (GC64) bytecode.
+  -d        Generate bytecode in deterministic manner.
   -n name   Set module name (default: auto-detect from input name).
   -t type   Set output file type (default: auto-detect from output name).
   -a arch   Override architecture for object files (default: native).
   -o os     Override OS for object files (default: native).
+  -F name   Override filename (default: input filename).
   -e chunk  Use chunk string as input.
   --        Stop handling options.
   -         Use stdin as input and/or stdout as output.
 
-File types: c h obj o raw (default)
+File types: c cc h obj o raw (default)
 ]]
   os.exit(1)
 end
@@ -49,10 +53,23 @@ local function check(ok, ...)
   os.exit(1)
 end
 
-local function readfile(input)
-  if type(input) == "function" then return input end
-  if input == "-" then input = nil end
-  return check(loadfile(input))
+local function readfile(ctx, input)
+  if ctx.string then
+    return check(loadstring(input, nil, ctx.mode))
+  elseif ctx.filename then
+    local data
+    if input == "-" then
+      data = io.stdin:read("*a")
+    else
+      local fp = assert(io.open(input, "rb"))
+      data = assert(fp:read("*a"))
+      assert(fp:close())
+    end
+    return check(load(data, ctx.filename, ctx.mode))
+  else
+    if input == "-" then input = nil end
+    return check(loadfile(input, ctx.mode))
+  end
 end
 
 local function savefile(name, mode)
@@ -68,7 +85,7 @@ end
 ------------------------------------------------------------------------------
 
 local map_type = {
-  raw = "raw", c = "c", h = "h", o = "obj", obj = "obj",
+  raw = "raw", c = "c", cc = "c", h = "h", o = "obj", obj = "obj",
 }
 
 local map_arch = {
@@ -456,18 +473,18 @@ typedef struct {
   uint32_t value;
 } mach_nlist;
 typedef struct {
-  uint32_t strx;
+  int32_t strx;
   uint8_t type, sect;
   uint16_t desc;
   uint64_t value;
 } mach_nlist_64;
 typedef struct
 {
-  uint32_t magic, nfat_arch;
+  int32_t magic, nfat_arch;
 } mach_fat_header;
 typedef struct
 {
-  uint32_t cputype, cpusubtype, offset, size, align;
+  int32_t cputype, cpusubtype, offset, size, align;
 } mach_fat_arch;
 typedef struct {
   struct {
@@ -501,6 +518,18 @@ typedef struct {
   mach_nlist sym_entry;
   uint8_t space[4096];
 } mach_fat_obj;
+typedef struct {
+  mach_fat_header fat;
+  mach_fat_arch fat_arch[2];
+  struct {
+    mach_header_64 hdr;
+    mach_segment_command_64 seg;
+    mach_section_64 sec;
+    mach_symtab_command sym;
+  } arch[2];
+  mach_nlist_64 sym_entry;
+  uint8_t space[4096];
+} mach_fat_obj_64;
 ]]
   local symname = '_'..LJBC_PREFIX..ctx.modname
   local isfat, is64, align, mobj = false, false, 4, "mach_obj"
@@ -509,7 +538,7 @@ typedef struct {
   elseif ctx.arch == "arm" then
     isfat, mobj = true, "mach_fat_obj"
   elseif ctx.arch == "arm64" then
-    is64, align, isfat, mobj = true, 8, true, "mach_fat_obj"
+    is64, align, isfat, mobj = true, 8, true, "mach_fat_obj_64"
   else
     check(ctx.arch == "x86", "unsupported architecture for OSX")
   end
@@ -592,14 +621,14 @@ end
 
 ------------------------------------------------------------------------------
 
-local function bclist(input, output)
-  local f = readfile(input)
+local function bclist(ctx, input, output)
+  local f = readfile(ctx, input)
   require("jit.bc").dump(f, savefile(output, "w"), true)
 end
 
 local function bcsave(ctx, input, output)
-  local f = readfile(input)
-  local s = string.dump(f, ctx.strip)
+  local f = readfile(ctx, input)
+  local s = string.dump(f, ctx.mode)
   local t = ctx.type
   if not t then
     t = detecttype(output)
@@ -622,9 +651,11 @@ local function docmd(...)
   local n = 1
   local list = false
   local ctx = {
-    strip = true, arch = jit.arch, os = jit.os:lower(),
-    type = false, modname = false,
+    mode = "bt", arch = jit.arch, os = jit.os:lower(),
+    type = false, modname = false, string = false,
   }
+  local strip = "s"
+  local gc64 = ""
   while n <= #arg do
     local a = arg[n]
     if type(a) == "string" and a:sub(1, 1) == "-" and a ~= "-" then
@@ -635,14 +666,18 @@ local function docmd(...)
 	if opt == "l" then
 	  list = true
 	elseif opt == "s" then
-	  ctx.strip = true
+	  strip = "s"
 	elseif opt == "g" then
-	  ctx.strip = false
+	  strip = ""
+	elseif opt == "W" or opt == "X" then
+	  gc64 = opt
+	elseif opt == "d" then
+	  ctx.mode = ctx.mode .. opt
 	else
 	  if arg[n] == nil or m ~= #a then usage() end
 	  if opt == "e" then
 	    if n ~= 1 then usage() end
-	    arg[1] = check(loadstring(arg[1]))
+	    ctx.string = true
 	  elseif opt == "n" then
 	    ctx.modname = checkmodname(tremove(arg, n))
 	  elseif opt == "t" then
@@ -651,6 +686,8 @@ local function docmd(...)
 	    ctx.arch = checkarg(tremove(arg, n), map_arch, "architecture")
 	  elseif opt == "o" then
 	    ctx.os = checkarg(tremove(arg, n), map_os, "OS name")
+	  elseif opt == "F" then
+	    ctx.filename = "@"..tremove(arg, n)
 	  else
 	    usage()
 	  end
@@ -660,9 +697,10 @@ local function docmd(...)
       n = n + 1
     end
   end
+  ctx.mode = ctx.mode .. strip .. gc64
   if list then
     if #arg == 0 or #arg > 2 then usage() end
-    bclist(arg[1], arg[2] or "-")
+    bclist(ctx, arg[1], arg[2] or "-")
   else
     if #arg ~= 2 then usage() end
     bcsave(ctx, arg[1], arg[2])

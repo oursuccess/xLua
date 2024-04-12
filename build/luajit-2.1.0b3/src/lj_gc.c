@@ -1,6 +1,6 @@
 /*
 ** Garbage collector.
-** Copyright (C) 2005-2021 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2023 Mike Pall. See Copyright Notice in luajit.h
 **
 ** Major portions taken verbatim or adapted from the Lua interpreter.
 ** Copyright (C) 1994-2008 Lua.org, PUC-Rio. See Copyright Notice in lua.h
@@ -27,6 +27,7 @@
 #include "lj_trace.h"
 #include "lj_dispatch.h"
 #include "lj_vm.h"
+#include "lj_vmevent.h"
 
 #define GCSTEPSIZE	1024u
 #define GCSWEEPMAX	40
@@ -107,6 +108,9 @@ static void gc_mark_start(global_State *g)
   gc_markobj(g, tabref(mainthread(g)->env));
   gc_marktv(g, &g->registrytv);
   gc_mark_gcroot(g);
+#if LJ_HASFFI
+  if (ctype_ctsG(g)) gc_markobj(g, ctype_ctsG(g)->finalizer);
+#endif
   g->gc.state = GCSpropagate;
 }
 
@@ -521,8 +525,13 @@ static void gc_call_finalizer(global_State *g, lua_State *L,
   hook_restore(g, oldh);
   if (LJ_HASPROFILE && (oldh & HOOK_PROFILE)) lj_dispatch_update(g);
   g->gc.threshold = oldt;  /* Restore GC threshold. */
-  if (errcode)
-    lj_err_throw(L, errcode);  /* Propagate errors. */
+  if (errcode) {
+    ptrdiff_t errobj = savestack(L, L->top-1);  /* Stack may be resized. */
+    lj_vmevent_send(L, ERRFIN,
+      copyTV(L, L->top++, restorestack(L, errobj));
+    );
+    L->top--;
+  }
 }
 
 /* Finalize one userdata or cdata object from the mmudata list. */
@@ -700,9 +709,12 @@ static size_t gc_onestep(lua_State *L)
     }
   case GCSfinalize:
     if (gcref(g->gc.mmudata) != NULL) {
+      GCSize old = g->gc.total;
       if (tvref(g->jit_base))  /* Don't call finalizers on trace. */
 	return LJ_MAX_MEM;
       gc_finalize(L);  /* Finalize one userdata object. */
+      if (old >= g->gc.total && g->gc.estimate > old - g->gc.total)
+	g->gc.estimate -= old - g->gc.total;
       if (g->gc.estimate > GCFINALIZECOST)
 	g->gc.estimate -= GCFINALIZECOST;
       return GCFINALIZECOST;
