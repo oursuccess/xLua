@@ -10,7 +10,12 @@
 
 #include "lua.h"
 #include "lualib.h"
+
+#if USING_LUAU
+
+#else
 #include "lauxlib.h"
+#endif
 
 #include <string.h>
 #include <stdint.h>
