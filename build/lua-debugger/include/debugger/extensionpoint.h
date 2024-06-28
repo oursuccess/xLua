@@ -1,7 +1,7 @@
 #pragma once
 
-#include "debugger_util.h"
-#include "debugger_proto.h"
+#include "util/util.h"
+#include "proto/proto.h"
 
 namespace CPL
 {

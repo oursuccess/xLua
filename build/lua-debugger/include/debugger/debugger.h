@@ -8,9 +8,9 @@
 #include <queue>
 #include <bitset>
 
-#include "debugger_util.h"
-#include "debugger_proto.h"
-#include "debugger_hookstate.h"
+#include "util/util.h"
+#include "proto/proto.h"
+#include "debugger/hookstate.h"
 
 namespace CPL
 {

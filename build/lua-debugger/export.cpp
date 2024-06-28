@@ -1,9 +1,5 @@
-extern "C"
-{
-#include "lauxlib.h"
-}
-
-#include "debugger_lib.h"
+#include "util/util.h"
+#include "debugger/debugger_lib.h"
 
 static const luaL_Reg debugger_lib[] = {
 	{ "tcpListen", tcpListen },

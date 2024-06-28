@@ -6,7 +6,7 @@
 
 #include "nlohmann/json_fwd.hpp"
 
-#include "debugger_util.h"
+#include "util/util.h"
 #include "debugger_manager.h"
 
 namespace CPL

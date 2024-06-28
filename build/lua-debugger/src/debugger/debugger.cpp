@@ -1,4 +1,4 @@
-#include "debugger_debugger.h"
+#include "debugger/debugger.h"
 
 namespace CPL
 {

@@ -2,10 +2,10 @@
 #include <memory>
 #include <unordered_set>
 
-#include "debugger_util.h"
-#include "debugger_debugger.h"
-#include "debugger_hookstate.h"
-#include "debugger_extensionpoint.h"
+#include "util/util.h"
+#include "debugger/debugger.h"
+#include "debugger/hookstate.h"
+#include "debugger/extensionpoint.h"
 
 namespace CPL
 {

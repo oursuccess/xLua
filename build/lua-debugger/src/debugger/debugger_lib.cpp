@@ -1,4 +1,4 @@
-#include "debugger_lib.h"
+#include "debugger/debugger_lib.h"
 
 bool query_variable(lua_State* L, std::shared_ptr<CPL::Variable> variable, const char* typeName, int object, int depth)
 {

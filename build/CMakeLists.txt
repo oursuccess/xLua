@@ -124,18 +124,19 @@ endif ( )
 
 #begin lua-debugger
 set (LuaDebugger 
-    lua-debugger/debugger_util.cpp
-    lua-debugger/debugger_lib.cpp
-    lua-debugger/debugger_proto.cpp
-    lua-debugger/debugger_manager.cpp
-    lua-debugger/debugger_hookstate.cpp
-    lua-debugger/debugger_debugger.cpp
-    lua-debugger/debugger_extensionpoint.cpp
-    lua-debugger/debugger_export.cpp
-    lua-debugger/debugger_facade.cpp
+    lua-debugger/src/util/util.cpp
+    lua-debugger/src/proto/proto.cpp
+    lua-debugger/src/debugger/debugger_lib.cpp
+    lua-debugger/src/debugger/debugger_manager.cpp
+    lua-debugger/src/debugger/hookstate.cpp
+    lua-debugger/src/debugger/debugger.cpp
+    lua-debugger/src/debugger/extensionpoint.cpp
+    lua-debugger/export.cpp
+    lua-debugger/src/debugger/facade.cpp
 )
 set_property( SOURCE ${LuaDebugger} APPEND PROPERTY COMPILE_DEFINITIONS LUA_LIB)
-list(APPEND THIRDPART_INC lua-debugger nlohmann)
+list(APPEND THIRDPART_INC nlohmann)
+include_directories(lua-debugger/include)
 set (THIRDPART_SRC ${THIRDPART_SRC} ${LuaDebugger})
 #end lua-debugger
 

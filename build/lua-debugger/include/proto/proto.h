@@ -1,7 +1,7 @@
 #pragma once
 
 #include "nlohmann/json.hpp"
-#include "debugger_arena.h"
+#include "arena/arena.h"
 #include <vector>
 #include <string>
 

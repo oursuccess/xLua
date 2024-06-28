@@ -1,5 +1,4 @@
-#include "debugger_manager.h"
-#include "debugger_util.h"
+#include "debugger/debugger_manager.h"
 
 #include <ranges>
 

@@ -1,6 +1,6 @@
-#include "debugger_hookstate.h"
-#include "debugger_debugger.h"
-#include "debugger_manager.h"
+#include "debugger/hookstate.h"
+#include "debugger/debugger.h"
+#include "debugger/debugger_manager.h"
 
 namespace CPL
 {

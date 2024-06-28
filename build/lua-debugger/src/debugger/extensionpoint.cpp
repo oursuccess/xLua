@@ -1,4 +1,4 @@
-#include "debugger_extensionpoint.h"
+#include "debugger/extensionpoint.h"
 #include <string>
 
 namespace CPL
