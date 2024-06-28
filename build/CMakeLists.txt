@@ -132,6 +132,7 @@ set (LuaDebugger
     lua-debugger/debugger_debugger.cpp
     lua-debugger/debugger_extensionpoint.cpp
     lua-debugger/debugger_export.cpp
+    lua-debugger/debugger_facade.cpp
 )
 set_property( SOURCE ${LuaDebugger} APPEND PROPERTY COMPILE_DEFINITIONS LUA_LIB)
 list(APPEND THIRDPART_INC lua-debugger nlohmann)

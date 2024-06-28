@@ -94,7 +94,7 @@ namespace CPL
 		}
 	}
 
-	Variable::Variable() : nameType(LUA_TSTRING), valueType(LUA_TNIL), cacheId(0)	//valueType is 0 in emmylua
+	Variable::Variable() : nameType(LUA_TSTRING), valueType(LUA_TNIL), cacheId(0)	//FIXME: valueType is 0 in emmylua, check this
 	{
 	}
 

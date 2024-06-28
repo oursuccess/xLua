@@ -1,7 +1,21 @@
 #include "debugger_extensionpoint.h"
+#include <string>
 
 namespace CPL
 {
+	std::string ExtensionPoint::extensionTable = "cplHelper";
+
+	int metaQuery(lua_State* L) {
+		const int argN = lua_gettop(L);
+		auto pVar = (Idx<Variable>*)lua_touserdata(L, 1);
+		const int index = 2;
+		const auto depth = lua_tonumber(L, 3);
+		bool queryHelper = false;
+		if (argN >= 4) queryHelper = lua_tonumber(L, 4);
+		//TODO: add implemetation
+		return -1;
+	}
+
 	ExtensionPoint::ExtensionPoint()
 	{
 	}
