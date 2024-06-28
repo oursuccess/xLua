@@ -1,12 +1,15 @@
 #pragma once
 
-#include "lapi.h"
+#include "debugger_util.h"
 #include <string>
 #include <memory>
 
-class Variable;
+namespace CPL
+{
+	class Variable;
+}
 
-bool query_variable(lua_State* L, std::shared_ptr<Variable> variable, const char* typeName, int object, int depth);
+bool query_variable(lua_State* L, std::shared_ptr<CPL::Variable> variable, const char* typeName, int object, int depth);
 
 int tcpListen(lua_State* L);
 int tcpConnect(lua_State* L);

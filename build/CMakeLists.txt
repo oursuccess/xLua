@@ -4,7 +4,7 @@
 # http://opensource.org/licenses/MIT
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.12)
 
 if ( WIN32 AND NOT CYGWIN AND NOT ( CMAKE_SYSTEM_NAME STREQUAL "WindowsStore" ) AND NOT ANDROID)
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT" CACHE STRING "")
@@ -14,6 +14,7 @@ if ( WIN32 AND NOT CYGWIN AND NOT ( CMAKE_SYSTEM_NAME STREQUAL "WindowsStore" ) 
 endif ()
 
 project(XLua LANGUAGES CXX C)
+set(CMAKE_CXX_STANDARD 20)
 
 if ( IOS )
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fembed-bitcode")
@@ -123,9 +124,14 @@ endif ( )
 
 #begin lua-debugger
 set (LuaDebugger 
-    lua-debugger/debugger_export.cpp
+    lua-debugger/debugger_util.cpp
     lua-debugger/debugger_lib.cpp
     lua-debugger/debugger_proto.cpp
+    lua-debugger/debugger_manager.cpp
+    lua-debugger/debugger_hookstate.cpp
+    lua-debugger/debugger_debugger.cpp
+    lua-debugger/debugger_extensionpoint.cpp
+    lua-debugger/debugger_export.cpp
 )
 set_property( SOURCE ${LuaDebugger} APPEND PROPERTY COMPILE_DEFINITIONS LUA_LIB)
 list(APPEND THIRDPART_INC lua-debugger nlohmann)
