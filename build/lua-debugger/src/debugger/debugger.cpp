@@ -41,8 +41,9 @@ namespace CPL
 	{
 	}
 
-	void Debugger::IsRunning() const
+	bool Debugger::IsRunning() const
 	{
+		return running;
 	}
 
 	bool Debugger::IsMainThread(lua_State* L) const

@@ -17,6 +17,6 @@ namespace CPL
 		bool QueryVariableGeneric(lua_State* L, Idx<Variable> variable, const char* typeName, int object, int depth, const char* queryFunction);
 
 	public:
-		static std::string extensionTable;
+		static const char* extensionTable;
 	};
 }

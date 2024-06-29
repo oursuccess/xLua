@@ -126,6 +126,7 @@ endif ( )
 set (LuaDebugger 
     lua-debugger/src/util/util.cpp
     lua-debugger/src/proto/proto.cpp
+    lua-debugger/src/proto/proto_handler.cpp
     lua-debugger/src/debugger/debugger_lib.cpp
     lua-debugger/src/debugger/debugger_manager.cpp
     lua-debugger/src/debugger/hookstate.cpp
@@ -133,11 +134,17 @@ set (LuaDebugger
     lua-debugger/src/debugger/extensionpoint.cpp
     lua-debugger/export.cpp
     lua-debugger/src/debugger/facade.cpp
+    lua-debugger/src/transporter/transporter.cpp
+    lua-debugger/src/transporter/socket_server_transporter.cpp
+    lua-debugger/src/transporter/socket_client_transporter.cpp
 )
 set_property( SOURCE ${LuaDebugger} APPEND PROPERTY COMPILE_DEFINITIONS LUA_LIB)
 list(APPEND THIRDPART_INC nlohmann)
 include_directories(lua-debugger/include)
 set (THIRDPART_SRC ${THIRDPART_SRC} ${LuaDebugger})
+
+add_subdirectory(libuv-1.46.0)
+include_directories(libuv-1.46.0/include)
 #end lua-debugger
 
 #begin lua-protobuf
@@ -267,6 +274,10 @@ set_property(
 if(UINT_ESPECIALLY)
     ADD_DEFINITIONS(-DUINT_ESPECIALLY)
 endif()
+
+#region debugger
+target_link_libraries(xlua uv_a)
+#endregion debugger
 	
 if ( WIN32 AND NOT CYGWIN )
     if (USING_LUAJIT)

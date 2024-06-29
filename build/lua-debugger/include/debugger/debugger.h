@@ -30,7 +30,7 @@ namespace CPL
 		void SetLuaState(lua_State* L);
 		void Hook(lua_State* L, lua_Debug* ar);
 		void Stop();
-		void IsRunning() const;
+		bool IsRunning() const;
 		bool IsMainThread(lua_State* L) const;	//or main coroutine
 		void AsyncDoString(const std::string& code);
 		bool Eval(std::shared_ptr<EvalContext> evalContext, bool force = false);

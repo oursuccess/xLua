@@ -7,6 +7,8 @@
 #include "nlohmann/json_fwd.hpp"
 
 #include "util/util.h"
+#include "proto/proto_handler.h"
+#include "transporter/transporter.h"
 #include "debugger_manager.h"
 
 namespace CPL
@@ -18,6 +20,7 @@ namespace CPL
 	};
 
 	enum class WorkMode {
+		Core,
 		Attach,
 	};
 
@@ -41,14 +44,14 @@ namespace CPL
 		int OnDisconnect();
 		void WaitIDE(bool force = false, int timeout = 0);
 		bool OnBreak(std::shared_ptr<Debugger> debugger);
-		void OnDestroy();
+		void Destroy();
 		void OnEvalResult(std::shared_ptr<EvalContext> context);
 		void SendLog(LogType type, const char* fmt, ...);
 		void OnLuaStateGC(lua_State* L);
 		void Hook(lua_State* L, lua_Debug* ar);
 
 		DebuggerManager& GetDebuggerManager();
-		std::shared_ptr<Debugger> GetDebugger();
+		std::shared_ptr<Debugger> GetDebugger(lua_State* L);
 
 		void SetReadyHook(lua_State* L);
 		void StartDebug();
@@ -69,8 +72,7 @@ namespace CPL
 	private:
 		std::mutex waitIDEMtx;
 		std::condition_variable waitIDECV;
-		//TODO: add Transporter, which is about network communication
-		//std::shared_ptr<Transporter> transporter;
+		std::shared_ptr<Transporter> transporter;
 
 		bool isIDEReady;
 		bool isAPIReady;
@@ -84,6 +86,6 @@ namespace CPL
 
 		DebuggerManager debuggerManager;
 
-		//TODO: add proto handler
+		ProtoHandler protoHandler;
 	};
 }
