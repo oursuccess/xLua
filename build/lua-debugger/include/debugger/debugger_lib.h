@@ -18,6 +18,6 @@ int waitIDE(lua_State* L);
 int tcpSharedListen(lua_State* L);
 int stop(lua_State* L);
 int registerTypeName(lua_State* L);
-int install_debugger(lua_State* L);
+bool install_debugger(lua_State* L);
 
 std::string prepareEvalExpr(const std::string& eval);

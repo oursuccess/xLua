@@ -9,7 +9,6 @@ static const luaL_Reg debugger_lib[] = {
 	{ "tcpSharedListen", tcpSharedListen },
 	{ "stop", stop },
 	{ "registerTypeName", registerTypeName },
-	{ "install_debugger", install_debugger },
 	{ NULL, NULL }
 };
 
