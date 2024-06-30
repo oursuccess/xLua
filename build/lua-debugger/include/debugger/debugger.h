@@ -27,7 +27,7 @@ namespace CPL
 		void Start();
 		void Attach();
 		void Detach(); //lua main thread destroy
-		void SetLuaState(lua_State* L);
+		void SetCurrentState(lua_State* L);
 		void Hook(lua_State* L, lua_Debug* ar);
 		void Stop();
 		bool IsRunning() const;
@@ -44,8 +44,7 @@ namespace CPL
 		void HandleBreak();
 		int GetStackLevel(bool skipC) const;
 		void UpdateHook(lua_State* L, int mask);
-		// ToDo: add Hook State 
-		void SetHookState(std::shared_ptr<HookState> hookState);
+		void SetHookState(std::shared_ptr<HookState> newState);
 		DebuggerManager* GetManager() const;
 		void SetVariableArena(Arena<Variable>* arena);
 		Arena<Variable>* GetVariableArena() const;
@@ -54,7 +53,7 @@ namespace CPL
 
 	private:
 		std::shared_ptr<BreakPoint> FindBreakPoint(lua_Debug* ar);
-		std::shared_ptr<BreakPoint> FindBreakPoint(const std::string& file, int line);
+		std::shared_ptr<BreakPoint> FindBreakPoint(const std::string& chunkName, int line);
 		std::string GetFile(lua_Debug* ar) const;
 
 		void CheckDoString();
@@ -64,7 +63,7 @@ namespace CPL
 		void DoLogMessage(std::shared_ptr<BreakPoint> bp);
 		bool DoHitCondition(std::shared_ptr<BreakPoint> bp);
 		//模糊匹配, 计算出匹配度最高的路径
-		int FuzzyMatchFileName(const std::string& fileName, const std::string& chunkName) const;
+		int FuzzyMatchFileName(const std::string& chunkName, const std::string& fileName) const;
 		void CacheValue(int valueIndex, Idx<Variable> variable) const;
 		void ClearCache();
 		int GetTypeFromName(const char* typeName);

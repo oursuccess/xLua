@@ -57,7 +57,7 @@ namespace CPL
 		std::shared_ptr<HookStateStepIn> stateStepIn;
 		std::shared_ptr<HookStateStepOut> stateStepOut;
 		std::shared_ptr<HookStateContinue> stateContinue;
-		std::shared_ptr<HookStateStop> stateSStop;
+		std::shared_ptr<HookStateStop> stateStop;
 
 		std::string helperCode;
 		std::vector<std::string> extNames;

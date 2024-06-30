@@ -11,7 +11,7 @@ namespace CPL
 	DebuggerManager::DebuggerManager() : 
 		stateBreak(std::make_shared<HookStateBreak>()), stateContinue(std::make_shared<HookStateContinue>()),
 		stateStepOver(std::make_shared<HookStateStepOver>()), stateStepIn(std::make_shared<HookStateStepIn>()),
-		stateStepOut(std::make_shared<HookStateStepOut>()), stateSStop(std::make_shared<HookStateStop>()),
+		stateStepOut(std::make_shared<HookStateStepOut>()), stateStop(std::make_shared<HookStateStop>()),
 		isRunning(false)
 	{
 	}
@@ -46,7 +46,7 @@ namespace CPL
 			debugger = it->second;
 		}
 
-		debugger->SetLuaState(L);
+		debugger->SetCurrentState(L);
 		return debugger;
 	}
 
@@ -144,7 +144,7 @@ namespace CPL
 	void DebuggerManager::HandleBreak(lua_State* L)
 	{
 		auto debugger = GetDebugger(L);
-		if (debugger) debugger->SetLuaState(L);
+		if (debugger) debugger->SetCurrentState(L);
 		else debugger = AddDebugger(L);
 
 		SetHitDebugger(debugger);

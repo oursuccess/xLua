@@ -18,7 +18,7 @@ namespace CPL
 		Idx(uint32_t raw, ArenaClass* arena) : raw(raw), arena(arena) {}
 		T& operator*() { return arena->Index(*this); }
 		T* operator->() { return &arena->Index(*this); }
-		ArenaClass* Get() { return arena; }
+		ArenaClass* GetArena() { return arena; }
 
 		uint32_t raw;
 
