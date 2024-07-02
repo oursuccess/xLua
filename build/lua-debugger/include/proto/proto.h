@@ -18,7 +18,7 @@ namespace CPL
 		Stop,
 	};
 
-	class JsonProtocol {
+	class CPLDEBUGGER_API JsonProtocol {
 	public:
 		template<typename T>
 		static nlohmann::json Serialize(std::vector<T>& objs) {
@@ -33,7 +33,7 @@ namespace CPL
 		virtual void Deserialize(const nlohmann::json& json);
 	};
 
-	class InitParams : public JsonProtocol {
+	class CPLDEBUGGER_API InitParams : public JsonProtocol {
 	public:
 		std::string helper;
 		std::vector<std::string> ext;
@@ -41,7 +41,7 @@ namespace CPL
 		virtual void Deserialize(const nlohmann::json& json) override;
 	};
 
-	class BreakPoint : public JsonProtocol {
+	class CPLDEBUGGER_API BreakPoint : public JsonProtocol {
 	public:
 		std::string file;
 		std::string condition;
@@ -54,7 +54,7 @@ namespace CPL
 		virtual void Deserialize(const nlohmann::json& json) override;
 	};
 
-	class AddBreakpointParams : public JsonProtocol {
+	class CPLDEBUGGER_API AddBreakpointParams : public JsonProtocol {
 	public:
 		bool clear = false;
 		std::vector<std::shared_ptr<BreakPoint>> breakpoints;
@@ -63,7 +63,7 @@ namespace CPL
 		virtual void Deserialize(const nlohmann::json& json) override;
 	};
 
-	class RemoveBreakpointParams : public JsonProtocol {
+	class CPLDEBUGGER_API RemoveBreakpointParams : public JsonProtocol {
 	public:
 		std::vector<std::shared_ptr<BreakPoint>> breakpoints;
 
@@ -71,7 +71,7 @@ namespace CPL
 		virtual void Deserialize(const nlohmann::json& json) override;
 	};
 
-	class ActionParams : public JsonProtocol {
+	class CPLDEBUGGER_API ActionParams : public JsonProtocol {
 	public:
 		DebugAction action = DebugAction::None;
 
@@ -79,7 +79,7 @@ namespace CPL
 		virtual void Deserialize(const nlohmann::json& json) override;
 	};
 
-	class Variable : public JsonProtocol {
+	class CPLDEBUGGER_API Variable : public JsonProtocol {
 	public:
 		Variable();
 
@@ -95,7 +95,7 @@ namespace CPL
 		virtual void Deserialize(const nlohmann::json& json) override;
 	};
 
-	class Stack : public JsonProtocol {
+	class CPLDEBUGGER_API Stack : public JsonProtocol {
 	public:
 		Stack();
 
@@ -111,7 +111,7 @@ namespace CPL
 		virtual void Deserialize(const nlohmann::json& json) override;
 	};
 
-	class EvalContext : public JsonProtocol {
+	class CPLDEBUGGER_API EvalContext : public JsonProtocol {
 	public:
 		EvalContext();
 
@@ -133,7 +133,7 @@ namespace CPL
 		Arena<Variable> arena;
 	};
 
-	class EvalParams : public JsonProtocol {
+	class CPLDEBUGGER_API EvalParams : public JsonProtocol {
 	public:
 		std::shared_ptr<EvalContext> context;
 

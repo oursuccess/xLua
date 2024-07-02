@@ -122,31 +122,6 @@ if (NOT USING_LUAJIT)
     list (APPEND XLUA_CORE memory_leak_checker.c)
 endif ( )
 
-#begin lua-debugger
-set (LuaDebugger 
-    lua-debugger/src/util/util.cpp
-    lua-debugger/src/proto/proto.cpp
-    lua-debugger/src/proto/proto_handler.cpp
-    lua-debugger/src/debugger/debugger_lib.cpp
-    lua-debugger/src/debugger/debugger_manager.cpp
-    lua-debugger/src/debugger/hookstate.cpp
-    lua-debugger/src/debugger/debugger.cpp
-    lua-debugger/src/debugger/extensionpoint.cpp
-    lua-debugger/export.cpp
-    lua-debugger/src/debugger/facade.cpp
-    lua-debugger/src/transporter/transporter.cpp
-    lua-debugger/src/transporter/socket_server_transporter.cpp
-    lua-debugger/src/transporter/socket_client_transporter.cpp
-)
-set_property( SOURCE ${LuaDebugger} APPEND PROPERTY COMPILE_DEFINITIONS LUA_LIB)
-list(APPEND THIRDPART_INC nlohmann)
-include_directories(lua-debugger/include)
-set (THIRDPART_SRC ${THIRDPART_SRC} ${LuaDebugger})
-
-add_subdirectory(libuv-1.46.0)
-include_directories(libuv-1.46.0/include)
-#end lua-debugger
-
 #begin lua-protobuf
 set (PROTOBUF_SRC lua-protobuf/pb.c)
 set_property( SOURCE ${PROTOBUF_SRC} APPEND PROPERTY COMPILE_DEFINITIONS LUA_LIB)
@@ -276,7 +251,12 @@ if(UINT_ESPECIALLY)
 endif()
 
 #region debugger
-target_link_libraries(xlua uv_a)
+add_subdirectory(libuv-1.46.0)
+add_subdirectory(lua-debugger-shared)
+add_subdirectory(lua-debugger)
+add_subdirectory(lua-debugger-hook)
+
+target_link_libraries(xlua cpl_debugger)
 #endregion debugger
 	
 if ( WIN32 AND NOT CYGWIN )

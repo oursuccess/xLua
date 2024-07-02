@@ -9,7 +9,7 @@
 
 namespace CPL
 {
-	class SocketClientTransporter : public Transporter {
+	class CPLDEBUGGER_API SocketClientTransporter : public Transporter {
 	public:
 		SocketClientTransporter();
 		~SocketClientTransporter();

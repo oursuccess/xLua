@@ -9,7 +9,7 @@
 
 namespace CPL
 {
-	class DebuggerManager
+	class CPLDEBUGGER_API DebuggerManager
 	{
 	public:
 		using UniqueIdentifyType = unsigned long long;

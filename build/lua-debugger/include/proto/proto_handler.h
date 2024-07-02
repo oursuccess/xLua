@@ -8,7 +8,7 @@ namespace CPL
 {
 	class DebuggerFacade;
 
-	class ProtoHandler {
+	class CPLDEBUGGER_API ProtoHandler {
 	public:
 		explicit ProtoHandler(DebuggerFacade* owner);
 		void OnDispatch(nlohmann::json params);

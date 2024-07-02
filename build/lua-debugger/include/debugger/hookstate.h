@@ -8,7 +8,7 @@ namespace CPL
 {
 	class Debugger;
 
-	class HookState {
+	class CPLDEBUGGER_API HookState {
 	public:
 		HookState();
 		virtual ~HookState();
@@ -19,12 +19,12 @@ namespace CPL
 		lua_State* currL;
 	};
 
-	class HookStateContinue : public HookState {
+	class CPLDEBUGGER_API HookStateContinue : public HookState {
 	public:
 		virtual bool Start(std::shared_ptr<Debugger> debugger, lua_State* L) override;
 	};
 
-	class StackLevelBasedState : public HookState {
+	class CPLDEBUGGER_API StackLevelBasedState : public HookState {
 	public:
 		virtual bool Start(std::shared_ptr<Debugger> debugger, lua_State* L) override;
 
@@ -34,7 +34,7 @@ namespace CPL
 		void UpdateStackLevel(std::shared_ptr<Debugger> debugger, lua_State* L, lua_Debug* ar);
 	};;
 
-	class HookStateStepIn : public StackLevelBasedState {
+	class CPLDEBUGGER_API HookStateStepIn : public StackLevelBasedState {
 	public:
 		virtual bool Start(std::shared_ptr<Debugger> debugger, lua_State* L) override;
 		virtual void ProcessHook(std::shared_ptr<Debugger> debugger, lua_State* L, lua_Debug* ar) override;
@@ -44,13 +44,13 @@ namespace CPL
 		int line = 0;
 	};
 
-	class HookStateStepOut : public StackLevelBasedState {
+	class CPLDEBUGGER_API HookStateStepOut : public StackLevelBasedState {
 	public:
 		virtual bool Start(std::shared_ptr<Debugger> debugger, lua_State* L) override;
 		virtual void ProcessHook(std::shared_ptr<Debugger> debugger, lua_State* L, lua_Debug* ar) override;
 	};
 
-	class HookStateStepOver : public StackLevelBasedState {
+	class CPLDEBUGGER_API HookStateStepOver : public StackLevelBasedState {
 	public:
 		virtual bool Start(std::shared_ptr<Debugger> debugger, lua_State* L) override;
 		virtual void ProcessHook(std::shared_ptr<Debugger> debugger, lua_State* L, lua_Debug* ar) override;
@@ -60,12 +60,12 @@ namespace CPL
 		int line = 0;
 	};
 
-	class HookStateBreak : public HookState {
+	class CPLDEBUGGER_API HookStateBreak : public HookState {
 	public:
 		virtual void ProcessHook(std::shared_ptr<Debugger> debugger, lua_State* L, lua_Debug* ar) override;
 	};
 
-	class HookStateStop : public HookState {
+	class CPLDEBUGGER_API HookStateStop : public HookState {
 	public:
 		virtual bool Start(std::shared_ptr<Debugger> debugger, lua_State* L) override;
 	};

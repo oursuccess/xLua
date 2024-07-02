@@ -24,7 +24,7 @@ namespace CPL
 		Attach,
 	};
 
-	class DebuggerFacade {
+	class CPLDEBUGGER_API DebuggerFacade {
 	public:
 		static DebuggerFacade& Get();
 		static void HookLua(lua_State* L, lua_Debug* ar);

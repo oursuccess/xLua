@@ -18,7 +18,7 @@ namespace CPL
 
 	class DebuggerManager;
 
-	class Debugger : public std::enable_shared_from_this<Debugger>
+	class CPLDEBUGGER_API Debugger : public std::enable_shared_from_this<Debugger>
 	{
 	public:
 		Debugger(lua_State* L, DebuggerManager* manager);

@@ -36,7 +36,7 @@ namespace CPL
 		LogNotify,
 	};
 
-	class Transporter {
+	class CPLDEBUGGER_API Transporter {
 	public:
 		Transporter(bool server);
 		virtual ~Transporter();

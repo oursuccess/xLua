@@ -5,7 +5,7 @@
 
 namespace CPL
 {
-	class ExtensionPoint {
+	class CPLDEBUGGER_API ExtensionPoint {
 	public:
 		ExtensionPoint();
 		void Initialize(lua_State* L);
