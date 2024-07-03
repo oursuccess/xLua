@@ -8,7 +8,7 @@ extern "C" {
 #include "lauxlib.h"
 }
 
-#define CPLDEBUGGER_API __declspec(dllexport)
+#define CPLDEBUGGER_API
 
 namespace CPL
 {

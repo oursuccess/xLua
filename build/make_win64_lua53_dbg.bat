@@ -5,6 +5,6 @@ cmake --build build64 --config Debug
 md plugin_lua53\Plugins\x86_64
 copy /Y build64\Debug\xlua.dll plugin_lua53\Plugins\x86_64\xlua.dll
 copy /Y build64\Debug\xlua.pdb plugin_lua53\Plugins\x86_64\xlua.pdb
-copy /Y build64\lua-debugger-hook\Debug\cpl_hook.dll plugin_lua53\Plugins\x86_64\cpl_hook.dll
-copy /Y build64\lua-debugger-hook\Debug\cpl_hook.pdb plugin_lua53\Plugins\x86_64\cpl_hook.pdb
+REM copy /Y build64\lua-debugger-hook\Debug\cpl_hook.dll plugin_lua53\Plugins\x86_64\cpl_hook.dll
+REM copy /Y build64\lua-debugger-hook\Debug\cpl_hook.pdb plugin_lua53\Plugins\x86_64\cpl_hook.pdb
 pause

@@ -127,9 +127,8 @@ namespace CPL
 		while (true)
 		{
 			size_t start = pos;
-			for (size_t i = pos; i < receiveSize; ++i) {
+			for (size_t i = pos; i < receiveSize && data[i] != '\n'; ++i) {
 				pos = i + 1;
-				break;
 			}
 			if (start != pos) {
 				if (!readHead) {
