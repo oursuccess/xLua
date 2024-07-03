@@ -33,6 +33,9 @@
 #include "lvm.h"
 #include "lzio.h"
 
+#pragma region LUA_DEBUGGER
+#include "util/tolua.h"
+#pragma endregion
 
 
 #define errorstatus(s)	((s) > LUA_YIELD)
@@ -646,6 +649,9 @@ static void resume (lua_State *L, void *ud) {
 
 
 LUA_API int lua_resume (lua_State *L, lua_State *from, int nargs) {
+#pragma region LUA_DEBUGGER
+    try_attach_debugger(L);
+#pragma endregion
   int status;
   unsigned short oldnny = L->nny;  /* save "number of non-yieldable" calls */
   lua_lock(L);

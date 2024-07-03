@@ -127,14 +127,26 @@ namespace CPL
 		while (true)
 		{
 			size_t start = pos;
-			for (size_t i = pos; i < receiveSize && data[i] != '\n'; ++i) {
-				pos = i + 1;
+			for (size_t i = pos; i < receiveSize; i++)
+			{
+				if (data[i] == '\n')
+				{
+					pos = i + 1;
+					break;
+				}
 			}
-			if (start != pos) {
-				if (!readHead) {
+			if (start != pos)
+			{
+				if (readHead)
+				{
+					// skip
+				}
+				else
+				{
 					std::string text(buf + start, pos - start);
-					auto doc = nlohmann::json::parse(text);
-					OnReceiveMessage(doc);
+					auto document = nlohmann::json::parse(text);
+					// bug 如果lua代码执行结束,这里行为未定义
+					OnReceiveMessage(document);
 				}
 				readHead = !readHead;
 			}

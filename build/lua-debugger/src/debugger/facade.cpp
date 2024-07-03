@@ -204,6 +204,8 @@ namespace CPL
 					SetReadyHook(L);
 				}
 			}
+
+			debugger->Hook(L, ar);
 		}
 		else {
 			if (GetWorkMode() == WorkMode::Attach) {
@@ -235,7 +237,7 @@ namespace CPL
 	}
 	void DebuggerFacade::StartDebug()
 	{
-		debuggerManager.SetRunning(false);
+		debuggerManager.SetRunning(true);
 		readyHook = true;
 	}
 	void DebuggerFacade::StartupHookMode(int port)
@@ -251,7 +253,7 @@ namespace CPL
 	}
 	void DebuggerFacade::Attach(lua_State* L)
 	{
-		if (transporter->IsConnected()) return;
+		if (!transporter->IsConnected()) return;
 
 		if (!isAPIReady) isAPIReady = install_debugger(L);
 

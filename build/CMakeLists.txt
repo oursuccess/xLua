@@ -125,6 +125,7 @@ endif ( )
 #region debugger
 set(CPL_DEUBGGER
    lua-debugger/src/util/util.cpp
+   lua-debugger/src/util/tolua.cpp
    lua-debugger/src/proto/proto.cpp
    lua-debugger/src/proto/proto_handler.cpp
    lua-debugger/src/debugger/debugger_lib.cpp
