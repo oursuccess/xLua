@@ -247,7 +247,7 @@ namespace CPL
 				auto& stack = stacks.back();
 				stack.file = GetFile(&ar);
 				stack.functionName = ar.name == nullptr ? "" : ar.name;
-				stack.level = ++totalLevel;
+				stack.level = totalLevel++;
 				stack.line = ar.currentline;
 
 				{
@@ -284,13 +284,14 @@ namespace CPL
 						lua_pop(L, 1);
 					}
 				}
+
+				++level;
 			}
 
 			lua_State* PL = manager->extension.QueryParentThread(L);
 			if (PL == nullptr) break;
 
 			L = PL;
-			++level;
 		}
 
 		SetCurrentState(prevL);
@@ -574,7 +575,7 @@ namespace CPL
 		int maxMatchProcess = 0;
 		auto breakpoints = manager->GetBreakPoints();
 		for (const auto& bp : breakpoints) {
-			if (bp->line = line) {
+			if (bp->line == line) {
 				int matchProcess = FuzzyMatchFileName(chunkName, bp->file);
 				if (matchProcess > 0 && matchProcess > maxMatchProcess) {
 					maxMatchProcess = matchProcess;
@@ -980,7 +981,7 @@ namespace CPL
 		int maxMatchSize = static_cast<int>(std::min(chunkSize, fileSize));
 		int matchProcess = 1;
 		for (int i = 1; i != maxMatchSize; ++i) {
-			char c = chunkName[chunkSize - i], f = fileName[chunkSize - i];
+			char c = chunkName[chunkSize - i], f = fileName[fileSize - i];
 			if (c != f) {
 				if (::tolower(c) == ::tolower(f)) continue;
 				//we assume that path from vscode can not be a relative path, but the chunkName can be(./aaa)
