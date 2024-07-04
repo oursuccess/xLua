@@ -14,7 +14,7 @@ namespace CPL
 		const int index = 2;
 		const auto depth = lua_tonumber(L, 3);
 		bool queryHelper = false;
-		if (argN >= 4) queryHelper = lua_tonumber(L, 4);
+		if (argN >= 4) queryHelper = lua_toboolean(L, 4);
 		if (auto debugger = DebuggerFacade::Get().GetDebugger(L))
 			debugger->GetVariable(L, *pVar, index, static_cast<int>(depth), queryHelper);
 		return 0;
@@ -33,9 +33,11 @@ namespace CPL
 		auto var = *pVar;
 		const std::string k = lua_tostring(L, 2);
 		if (k == "name") lua_pushstring(L, var->name.c_str());
+		else if (k == "value") lua_pushstring(L, var->value.c_str());
 		else if (k == "valueType") lua_pushnumber(L, var->valueType);
 		else if (k == "valueTypeName") lua_pushstring(L, var->valueTypeName.c_str());
 		else if (k == "addChild") lua_pushcfunction(L, metaAddChild);
+		else if (k == "query") lua_pushcfunction(L, metaQuery);
 		else lua_pushnil(L);
 
 		return 1;

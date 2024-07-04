@@ -166,13 +166,30 @@ namespace CPL
 
 	void EvalContext::Deserialize(const nlohmann::json& json)
 	{
-		if (json.count("seq") != 0) seq = json["seq"];
-		if (json.count("expr") != 0) expr = json["expr"];
-		if (json.count("value") != 0) value = json["value"];
-		if (json.count("setValue") != 0) setValue = json["setValue"];
-		if (json.count("stackLevel") != 0) stackLevel = json["stackLevel"];
-		if (json.count("depth") != 0) depth = json["depth"];
-		if (json.count("cacheId") != 0) cacheId = json["cacheId"];
+		if (json.count("seq") != 0 && json["seq"].is_number_integer()) {
+			seq = json["seq"];
+		}
+		if (json.count("expr") != 0 && json["expr"].is_string()) {
+			expr = json["expr"];
+		}
+
+		if (json.count("value") != 0 && json["value"].is_string()) {
+			value = json["value"];
+		}
+
+		if (json.count("setValue") != 0 && json["setValue"].is_boolean()) {
+			setValue = json["setValue"];
+		}
+
+		if (json.count("stackLevel") != 0 && json["stackLevel"].is_number_integer()) {
+			stackLevel = json["stackLevel"];
+		}
+		if (json.count("depth") != 0 && json["depth"].is_number_integer()) {
+			depth = json["depth"];
+		}
+		if (json.count("cacheId") != 0 && json["cacheId"].is_number_integer()) {
+			cacheId = json["cacheId"];
+		}
 	}
 
 	nlohmann::json EvalParams::Serialize()

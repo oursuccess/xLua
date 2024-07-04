@@ -139,7 +139,8 @@ namespace CPL
 		if (!manager->helperCode.empty()) {
 			ExecuteOnLuaThread([this](lua_State* L) {
 				const int t = lua_gettop(L);
-				if (int ret = lua_pushthread(L)) {
+				int ret = lua_pushthread(L);
+				if (ret == 1) {
 					const int r = luaL_loadstring(L, manager->helperCode.c_str());
 					if (r == LUA_OK && lua_pcall(L, 0, 0, 0) != LUA_OK) {
 						printf("msg: %s", lua_tostring(L, -1));
