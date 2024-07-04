@@ -238,7 +238,6 @@ namespace CPL
 		while (true) {
 			int level = 0;
 			while (true) {
-
 				lua_Debug ar{};
 				if (!lua_getstack(L, level, &ar)) break;
 				if (!lua_getinfo(L, "nSlu", &ar)) continue;
@@ -251,7 +250,7 @@ namespace CPL
 				stack.line = ar.currentline;
 
 				{
-					for (int i = 0; ; ++i) {
+					for (int i = 1; ; ++i) {
 						const char* name = lua_getlocal(L, &ar, i);
 						if (name == nullptr) break;
 						if (name[0] == '(') {

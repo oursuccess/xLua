@@ -4,7 +4,7 @@
 
 namespace CPL
 {
-	const char* ExtensionPoint::extensionTable = "CPLHelper";
+	const char* ExtensionPoint::extensionTable = "cplHelper";
 	const char* DEBUGGER_META = "CPL_DEBUGGER_META";
 
 #pragma region Private MetaMethod
