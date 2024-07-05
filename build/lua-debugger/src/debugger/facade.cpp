@@ -57,7 +57,7 @@ namespace CPL
 	}
 	DebuggerFacade::DebuggerFacade() : transporter(nullptr), protoHandler(this),
 		isIDEReady(false), isAPIReady(false), StartHook(nullptr), isWaitForIDE(false),
-		workMode(WorkMode::Attach), readyHook(false)
+		workMode(WorkMode::Core), readyHook(false)
 	{
 	}
 	DebuggerFacade::~DebuggerFacade()

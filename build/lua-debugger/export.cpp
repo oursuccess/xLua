@@ -4,6 +4,8 @@
 
 #define DEBUGGER_API extern "C" __declspec(dllexport)
 
+using namespace CPL;
+
 #if WIN32
 #include <processthreadsapi.h>
 
@@ -27,6 +29,17 @@ static const luaL_Reg debugger_lib[] = {
 };
 
 DEBUGGER_API int luaopen_cpl_debugger(lua_State* L) {
-	luaL_newlib(L, debugger_lib);
+
+	DebuggerFacade::Get().SetWorkMode(WorkMode::Core);
+	if (!install_debugger(L)) return false;
+	luaL_newlibtable(L, debugger_lib);
+	luaL_setfuncs(L, debugger_lib, 0);
+
+	lua_pushglobaltable(L);
+	lua_pushstring(L, "cpl_core");
+	lua_pushvalue(L, -3);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+
 	return 1;
 }
