@@ -28,7 +28,7 @@ static const luaL_Reg debugger_lib[] = {
 	{ NULL, NULL }
 };
 
-DEBUGGER_API int luaopen_cpl_debugger(lua_State* L) {
+DEBUGGER_API int luaopen_debugger(lua_State* L) {
 
 	DebuggerFacade::Get().SetWorkMode(WorkMode::Core);
 	if (!install_debugger(L)) return false;

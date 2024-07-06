@@ -29,6 +29,9 @@
 #include "lundump.h"
 #include "lvm.h"
 
+#if CPL_DEBUGGER
+#include "util/tolua.h"
+#endif
 
 
 const char lua_ident[] =
@@ -947,6 +950,9 @@ static void f_call (lua_State *L, void *ud) {
 
 LUA_API int lua_pcallk (lua_State *L, int nargs, int nresults, int errfunc,
                         lua_KContext ctx, lua_KFunction k) {
+#if CPL_DEBUGGER
+    try_attach_debugger(L);
+#endif
   struct CallS c;
   int status;
   ptrdiff_t func;
@@ -1112,6 +1118,9 @@ LUA_API int lua_gc (lua_State *L, int what, int data) {
 
 
 LUA_API int lua_error (lua_State *L) {
+#if CPL_DEBUGGER
+    try_attach_debugger(L);
+#endif
   lua_lock(L);
   api_checknelems(L, 1);
   luaG_errormsg(L);

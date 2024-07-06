@@ -6,6 +6,9 @@
 
 cmake_minimum_required(VERSION 3.12)
 
+#debugger
+option(BUILD_WITH_DEBUGGER "build with debugger" ON)
+
 if ( WIN32 AND NOT CYGWIN AND NOT ( CMAKE_SYSTEM_NAME STREQUAL "WindowsStore" ) AND NOT ANDROID)
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT" CACHE STRING "")
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd /Od /Zi" CACHE STRING "")
@@ -123,6 +126,7 @@ if (NOT USING_LUAJIT)
 endif ( )
 
 #region debugger
+if (BUILD_WITH_DEBUGGER)
 set(CPL_DEUBGGER
    lua-debugger/src/util/util.cpp
    lua-debugger/src/util/tolua.cpp
@@ -147,6 +151,9 @@ include_directories(
     nlohmann
 )
 set(THIRDPART_SRC ${THIRDPART_SRC} ${CPL_DEUBGGER})
+
+add_compile_definitions(CPL_DEBUGGER)
+endif()
 #endregion debugger
 
 #begin lua-protobuf
@@ -278,9 +285,11 @@ if(UINT_ESPECIALLY)
 endif()
 
 #region debugger
+if (BUILD_WITH_DEBUGGER)
 add_subdirectory(libuv-1.46.0)
 
 target_link_libraries(xlua uv_a)
+endif()
 #endregion debugger
 
 if ( WIN32 AND NOT CYGWIN )
